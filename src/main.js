@@ -1,52 +1,123 @@
-import React, { Component } from 'react';
+import React, { Component } from 'react'
 import {
-  Navigator,
-  Text,
-  StyleSheet
-} from 'react-native';
-
-//import ReactStormpath, { Router, AuthenticatedRoute, LoginLink } from 'react-stormpath';
-//import SignIn from './components/authentication/signin';
-//import SignUp from './components/authentication/signup';
-import Catalog from './components/catalog';
-import Cart from './components/cart';
+   StyleSheet,
+   Text,
+   Navigator,
+   TouchableOpacity
+} from 'react-native'
+import Cart from './components/cart'
+import Catalog from './components/catalog'
+import Detail from './components/product_detail';
 
 
-const ROUTES = {
-    catalog: Catalog,
-    cart: Cart
+export default class Router extends Component {
+   constructor(props){
+      super(props);
+   }
+
+   render() {
+      return (
+         <Navigator
+            initialRoute = {{ name: 'Catalog', title: 'Catalog' }}
+            renderScene = { this.renderScene }
+            navigationBar = {
+               <Navigator.NavigationBar
+                  style = { styles.navigationBar }
+                  routeMapper = { NavigationBarRouteMapper } />
+            }
+         />
+      );
+   }
+
+   renderScene(route, navigator) {
+      if(route.name == 'Catalog') {
+         return (
+            <Catalog
+               navigator = {navigator}
+               {...route.passProps}
+            />
+         )
+      }
+      if(route.name == 'Cart') {
+         return (
+            <Cart
+               navigator = {navigator}
+               {...route.passProps}
+            />
+         )
+      }
+      if(route.name == 'Detail') {
+        return (
+          <Detail
+            navigator = {navigator}
+            {...route.passProps}
+          />
+        )
+      }
+   }
 }
 
-class Main extends Component {
-  constructor(props) {
-    super(props);
-  }
-
-  // The initial route is 'signin' as described in the ROUTES var
-  render() {
-    return (
-      <Navigator
-        style={ styles.container }
-        initialRoute={{ name: 'catalog' }}
-        renderScene={ this.renderScene }
-        configureScene={() => { return Navigator.SceneConfigs.FloatFromRight; }} />
-    );
-  }
-
-  // whenever the scene changes, render scene is going to be called with a route
-  // and an instance of our Navigator object. Whatever this returns is what
-  // is going to be put on the stack
-  renderScene(route, navigator) {
-    var Component = ROUTES[route.name];
-    // passing route and navigator so subsequent components have access to it
-    return <Component route={route} navigator={navigator} />
-  }
-}
+var NavigationBarRouteMapper = {
+   LeftButton(route, navigator, index, navState) {
+      if(route.name == 'Detail') {
+         return (
+            <TouchableOpacity
+               onPress = {() => { if (index > 0) { navigator.pop() } }}>
+               <Text style={ styles.leftButton }>
+                  Back
+               </Text>
+            </TouchableOpacity>
+         );
+      } else if (route.name == 'Cart') {
+        return (
+          <TouchableOpacity
+             onPress = {() => { if (index > 0) { navigator.popToTop() } }}>
+             <Text style={ styles.leftButton }>
+                Catalog
+             </Text>
+          </TouchableOpacity>
+        );
+      } else { return null }
+   },
+   RightButton(route, navigator, index, navState) {
+      return (
+         <TouchableOpacity
+            onPress = { () => navigator.push({ name: 'Cart', passProps: {
+              ...route.passProps
+            }})}>
+            <Text style = { styles.rightButton }>
+               Cart
+            </Text>
+         </TouchableOpacity>
+      );
+   },
+   Title(route, navigator, index, navState) {
+      return (
+         <Text style = { styles.title }>
+            Simple Shopper
+         </Text>
+      )
+   }
+};
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  }
-})
-
-export default Main;
+   navigationBar: {
+      backgroundColor: 'gray',
+   },
+   leftButton: {
+      color: '#ffffff',
+      margin: 10,
+      fontSize: 17,
+   },
+   title: {
+      paddingVertical: 10,
+      color: '#ffffff',
+      justifyContent: 'center',
+      fontSize: 18
+   },
+   rightButton: {
+      color: 'white',
+      margin: 10,
+      fontSize: 16
+   }
+});
