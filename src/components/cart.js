@@ -76,16 +76,19 @@ export default class Cart extends Component {
       for (var key in totals) {
         totalPrice += totals[key].price
         totalsArray.push(
-          <ListItem thumbnail>
+          <ListItem thumbnail key={key}>
             <Left>
               <Thumbnail square size={60} source={totals[key].img} />
             </Left>
             <Body>
               <Text>{key}</Text>
-              <Text note>Count: {totals[key].count}</Text>
+              <Text note>Count: {totals[key].count} - Total: {totals[key].price}</Text>
             </Body>
             <Right>
-              <Text>Total: {totals[key].price}</Text>
+              <Button transparent onPress={this.handleRemovePressed.bind(this)}>
+                <Text>Remove</Text>
+              </Button>
+
             </Right>
           </ListItem>
         );
@@ -95,7 +98,7 @@ export default class Cart extends Component {
     // add the very bottom total and checkout Button
     if (!_.isEmpty(totals)) {
       totalsArray.push(
-        <ListItem>
+        <ListItem key={'closing'}>
           <Left>
             <Button success><Text>Checkout</Text></Button>
           </Left>
@@ -111,7 +114,23 @@ export default class Cart extends Component {
     return totalsArray;
   }
 
-
+  handleRemovePressed() {
+    // var itemName = "Kitchenaid Blender";
+    // var updatedCart = [];
+    // var removed = false;
+    //
+    // this.props.cart.forEach((item) => {
+    //   var name = item[0].name;
+    //   if (name == itemName && !removed) {
+    //     removed = true;
+    //     return;
+    //   } else {
+    //     return updatedCart.push(item);
+    //   }
+    // });
+    // this.setState({ passProps: {cart: updatedCart} });
+    // console.log(this.props.cart);
+  }
 }
 
 const styles = StyleSheet.create({
